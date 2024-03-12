@@ -11,6 +11,7 @@ def run_script(path_file: str) -> Tuple[int, str]:
     match = pattern.search(path_file)
     path = path_file[:match.span()[0]]
 
+    # TODO: option for any venv dir with any name
     venv = subprocess.run([f"{path}venv/bin/python", path_file], stdout=subprocess.PIPE)
     result = subprocess.run(['python3', path_file], stdout=subprocess.PIPE)
 
