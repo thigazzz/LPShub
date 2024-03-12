@@ -1,31 +1,18 @@
 """
-Test run script feature
+Test for running a script.
 """
 import os
-import subprocess
-import re
-from typing import Tuple
-
-def run_script(path_file: str) -> Tuple[int, str]:
-    if os.path.isfile(path_file) == False:
-        return (1, "Broken")
-
-    pattern = re.compile(r"\w+\..+")
-    match = pattern.search(path_file)
-    path = path_file[:match.span()[0]]
-
-    venv = subprocess.run([f"{path}venv/bin/python", path_file], stdout=subprocess.PIPE)
-    result = subprocess.run(['python3', path_file], stdout=subprocess.PIPE)
-
-    if result.returncode > 0:
-        return (1, "Error running this file")
+from lpshub.run_script import run_script
 
 def test_show_error_when_file_not_have_success_running():
     """
-    Test the return of function when any failure occurs.
-    When failure happens the function must return a Error tuple
+    Test for when running a broken Python file or a file with errors.
+    When the failure happens, the function must return an Error tuple.
+    In this case, it must return an error describing which Python
+    file has an error and which, because of this, the file did not run.
 
-    >>> run_script(broken_path)
+    An example of how the API of this behavior must be:
+    >>> run_script(python_file_with_internal_errors)
     (1, 'Error') == (exit_code, error's message)
 
     >>> run_script(broken_file)
@@ -35,7 +22,7 @@ def test_show_error_when_file_not_have_success_running():
     (1, 'Error') == (exit_code, error's message)
     
     """
-    # TODO: create a fake environment which mock the venv behavior and files
+    # TODO: create a fake environment which mocks the venv behavior and files
     sut = run_script
     fake_path = './tests/fake/fake_broken_file.py'
     with open(fake_path, 'a') as f:
@@ -50,6 +37,19 @@ def test_show_error_when_file_not_have_success_running():
     os.remove(fake_path)
 
 def test_show_error_when_path_is_broken():
+    """   
+    Test for when running a wrong path or named Python file.
+
+    An example of how the API of this behavior must be:
+    >>> run_script(wrong_name)
+    (1, 'Error') == (exit_code, error's message)
+
+    >>> run_script(nonexistent_file)
+    (1, 'Error') == (exit_code, error's message)
+
+    >>> run_script(wrong_path_file)
+    (1, 'Error') == (exit_code, error's message)
+    """
     sut = run_script
     error = sut('broken_path/broken_file.any')
     assert error[0] > 0
