@@ -54,11 +54,13 @@ class DatabaseWithJSON(Database):
     def delete(self, id: int) -> None:
         ...
 
+from itertools import count
 class Script:
+    c = count()
     def __init__(self, database: Database):
         self.database = database
     
-    def add(self, path: str) -> None | Tuple[int, str]:
+    def add(self, file_path: str, venv_info: tuple) -> None | Tuple[int, str]:
         """
         Adds a new script in to database to be executed.
         When the path of file or file not exists, an error
@@ -69,35 +71,15 @@ class Script:
                 The path of Python script
         
         """
-        if os.path.isfile(path) == False:
+        if os.path.isfile(file_path) == False:
             return (1, "Broken")
+        
+        _venv = False
+        if venv_info[0] == True:
+            if os.path.exists(venv_info[1]) == False:
+                return (1, "Virtual Environment path is wrong")
+            _venv = {'path': venv_info[1]}
 
-        venv_dir = self.__get_venv_dir(path)
-        id = 1
-
-        new_script = (id, path, venv_dir)
-
-        self.database.add(path)
-
-    def __get_venv_dir(self, path: str) -> str | bool:
-        """
-        Get the Virual Environment path/dir (the full path to venv) 
-        by a file path.
-        When no have a venv directory, is returned FALSE.
-
-        Param:
-            path: str
-                The path of a file to get the venv directory
-            
-        Returns:
-            venv_dir: str
-                Full path to Venv directory of a file
-        """
-        if self.__is_not_venv_in(path):
-            return False
-
-        return 'hard coded'
-
-    def __is_not_venv_in(self, dir: str):
-        return False
-    
+        id = next(self.c) # TODO: change type of ID
+        new_script = {'id': id, 'path': file_path, 'venv': _venv}
+        self.database.create(new_script)
