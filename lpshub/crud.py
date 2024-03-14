@@ -6,7 +6,7 @@ import os
 from typing import Tuple
 from itertools import count
 from collections import namedtuple
-from lpshub.database.database import Database
+from database.database import Database
 
 Script = namedtuple('Script', 'id, path, venv')
 

@@ -7,6 +7,9 @@ packaging==23.2
 pathspec==0.12.1
 platformdirs==4.2.0
 pluggy==1.4.0
+pyasn1==0.5.1
+PySimpleGUI==5.0.3
 pytest==8.0.2
+rsa==4.9
 tomli==2.0.1
 typing_extensions==4.10.0
