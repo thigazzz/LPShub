@@ -2,65 +2,21 @@
 Module for CRUD interactions of script: Add, Delete and Update a script
 in database
 """
-from collections import namedtuple
-from abc import ABC, abstractmethod
-from typing import Tuple
-
-class Database(ABC):
-    @abstractmethod
-    def create(self, item) -> None:
-        ...
-    @abstractmethod
-    def read_one(self, id: int):
-        ...
-    @abstractmethod
-    def read_all(self) -> list:
-        ...
-    @abstractmethod
-    def update(self, id: int, item) -> None:
-        ...
-    @abstractmethod
-    def delete(self, id: int) -> None:
-        ...
 import os
-import json
-class DatabaseWithJSON(Database):
-    def __init__(self):
-        self.database_path = './database/scripts.json'
-        if os.path.exists('./database') == False:
-            os.makedirs('./database')
-        if os.path.exists(self.database_path) == False:
-            with open(self.database_path, 'w') as f:
-                j = json.dumps({'scripts': []})
-                f.write(j)
-
-    def create(self, item) -> None:
-        scripts = self.read_all()
-        scripts.append(item)
-
-        with open(self.database_path, 'w') as f:
-            j = json.dumps({'scripts': scripts})
-            f.write(j)
-
-    def read_one(self, id: int):
-        ...
-    def read_all(self) -> list:
-        with open(self.database_path, 'r') as f:
-            j = json.load(f)
-
-        return j['scripts'] # scripts
-    def update(self, id: int, item) -> None:
-        ...
-    def delete(self, id: int) -> None:
-        ...
-
+from typing import Tuple
 from itertools import count
-class Script:
+from collections import namedtuple
+from lpshub.database.database import Database
+
+Script = namedtuple('Script', 'id, path, venv')
+
+class ScriptCRUD:
     c = count()
     def __init__(self, database: Database):
         self.database = database
     
     def add(self, file_path: str, venv_info: tuple) -> None | Tuple[int, str]:
+        # TODO: Refactor documentation
         """
         Adds a new script in to database to be executed.
         When the path of file or file not exists, an error
