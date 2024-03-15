@@ -3,7 +3,7 @@ Module for CRUD interactions of script: Add, Delete and Update a script
 in database
 """
 import os
-from typing import Tuple
+from typing import Tuple, List
 from itertools import count
 from collections import namedtuple
 from database.database import Database
@@ -39,3 +39,25 @@ class ScriptCRUD:
         id = next(self.c) # TODO: change type of ID
         new_script = {'id': id, 'path': file_path, 'venv': _venv}
         self.database.create(new_script)
+
+        return Script(id=id, path=file_path, venv=_venv['path'] if _venv else _venv)
+
+
+    def list_all(self) -> List[Script]:
+        # TODO: Refactor documentation
+        """
+        >>> list_all()
+        [Script(), Script(), Script()]
+        """
+        json_list = self.database.read_all()
+        scripts = []
+        for json_item in json_list:
+            scripts.append(
+                Script(
+                    id=json_item['id'], 
+                    path=json_item['path'],
+                    venv=json_item['venv']['path'] if json_item['venv'] else json_item['venv']
+                )
+            )
+
+        return scripts
